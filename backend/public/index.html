@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Book Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- Global Notification Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" onclick="navigateTo('marketplace')">
+        <span class="brand-icon">📚</span>
+        <span class="brand-title">Student<span>Books</span></span>
+      </div>
+
+      <!-- Quick Search Bar in Header -->
+      <div class="nav-search">
+        <input type="text" id="global-search-input" placeholder="Search textbooks by title, author, or keyword...">
+        <button id="global-search-btn" class="btn btn-search">Search</button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links">
+        <button class="nav-link active" onclick="navigateTo('marketplace')">Browse Books</button>
+        <button class="nav-link auth-required" onclick="navigateTo('create-book')">+ Sell a Book</button>
+        <button class="nav-link auth-required" onclick="navigateTo('my-books')">My Listings</button>
+        <button class="nav-link admin-only" onclick="navigateTo('admin')">Admin Panel</button>
+        
+        <!-- User Menu / Auth Buttons -->
+        <div id="nav-auth-section" class="nav-auth">
+          <button class="btn btn-outline unauth-only" onclick="navigateTo('login')">Log In</button>
+          <button class="btn btn-primary unauth-only" onclick="navigateTo('register')">Sign Up</button>
+          
+          <div class="user-dropdown auth-only">
+            <button id="user-menu-btn" class="user-menu-btn">
+              <span id="user-avatar-initials" class="avatar-sm">U</span>
+              <span id="user-display-name">Student</span>
+              <span class="caret">▾</span>
+            </button>
+            <div id="user-dropdown-menu" class="dropdown-menu">
+              <div class="dropdown-header">
+                <strong id="dropdown-user-name">Student</strong>
+                <span id="dropdown-user-email">student@example.com</span>
+                <span id="dropdown-user-role" class="badge badge-info">USER</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="javascript:void(0)" onclick="navigateTo('profile')">Profile & Settings</a>
+              <a href="javascript:void(0)" onclick="navigateTo('my-books')">My Book Listings</a>
+              <a href="javascript:void(0)" id="admin-dropdown-link" class="admin-only" onclick="navigateTo('admin')">Admin Dashboard</a>
+              <div class="dropdown-divider"></div>
+              <a href="javascript:void(0)" class="text-danger" onclick="handleLogout()">Log Out</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="main-content">
+
+    <!-- VIEW: MARKETPLACE / BROWSE BOOKS -->
+    <section id="view-marketplace" class="view-section active">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <h1>Buy & Sell College Textbooks at Fair Prices</h1>
+          <p>Direct peer-to-peer student marketplace. Save up to 70% on course textbooks and study guides.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" onclick="navigateTo('create-book')">List Your Book for Sale</button>
+            <button class="btn btn-outline-white btn-lg" onclick="document.getElementById('books-grid-section').scrollIntoView({behavior: 'smooth'})">Explore Listings</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="marketplace-container" id="books-grid-section">
+        <!-- Sidebar Filters -->
+        <aside class="filter-sidebar">
+          <div class="filter-header">
+            <h3>Filters</h3>
+            <button id="btn-reset-filters" class="btn-link" onclick="resetFilters()">Reset All</button>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-category">Category</label>
+            <select id="filter-category" class="form-control">
+              <option value="">All Categories</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-condition">Condition</label>
+            <select id="filter-condition" class="form-control">
+              <option value="">Any Condition</option>
+              <option value="NEW">New</option>
+              <option value="LIKE_NEW">Like New</option>
+              <option value="GOOD">Good</option>
+              <option value="FAIR">Fair</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Price Range (₹ / $)</label>
+            <div class="price-inputs">
+              <input type="number" id="filter-min-price" class="form-control" placeholder="Min" min="0">
+              <span class="price-separator">-</span>
+              <input type="number" id="filter-max-price" class="form-control" placeholder="Max" min="0">
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" onclick="applyFilters()">Apply Filters</button>
+        </aside>
+
+        <!-- Main Listings Content -->
+        <div class="listings-area">
+          <div class="listings-toolbar">
+            <div class="results-count">
+              Showing <span id="total-books-count">0</span> books
+            </div>
+            <div class="sort-control">
+              <label for="sort-books">Sort by:</label>
+              <select id="sort-books" class="form-control" onchange="applyFilters()">
+                <option value="newest">Newest First</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Books Grid -->
+          <div id="books-grid" class="books-grid">
+            <!-- Dynamic Book Cards -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="no-books-empty" class="empty-state hidden">
+            <div class="empty-icon">📖</div>
+            <h3>No books found</h3>
+            <p>Try adjusting your search query or filters to find what you're looking for.</p>
+            <button class="btn btn-outline" onclick="resetFilters()">Clear Filters</button>
+          </div>
+
+          <!-- Pagination -->
+          <div id="pagination-controls" class="pagination-wrapper hidden">
+            <button id="btn-prev-page" class="btn btn-outline btn-sm" onclick="changePage(-1)">← Previous</button>
+            <span id="pagination-info" class="pagination-info">Page 1 of 1</span>
+            <button id="btn-next-page" class="btn btn-outline btn-sm" onclick="changePage(1)">Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: BOOK DETAILS -->
+    <section id="view-book-details" class="view-section">
+      <div class="details-container">
+        <button class="btn btn-link btn-back" onclick="navigateTo('marketplace')">← Back to Marketplace</button>
+        
+        <div class="book-details-layout">
+          <!-- Left: Images -->
+          <div class="book-gallery">
+            <div class="primary-image-wrapper">
+              <img id="detail-primary-image" src="" alt="Book Cover" class="detail-img">
+            </div>
+            <div id="detail-thumbnails" class="thumbnail-row">
+              <!-- Thumbnails if multiple -->
+            </div>
+          </div>
+
+          <!-- Right: Metadata & Seller Contact Card -->
+          <div class="book-info-pane">
+            <div class="book-badges">
+              <span id="detail-category" class="badge badge-category">Category</span>
+              <span id="detail-condition" class="badge badge-condition">Condition</span>
+              <span id="detail-status" class="badge badge-status">Status</span>
+            </div>
+
+            <h1 id="detail-title" class="book-title">Book Title</h1>
+            <p class="book-author">By <span id="detail-author">Author Name</span></p>
+
+            <div class="price-box">
+              <span class="price-currency">₹</span>
+              <span id="detail-price" class="price-amount">0</span>
+            </div>
+
+            <div class="details-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">Edition</span>
+                <span id="detail-edition" class="meta-value">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Publication Year</span>
+                <span id="detail-year" class="meta-value">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Listed On</span>
+                <span id="detail-date" class="meta-value">-</span>
+              </div>
+            </div>
+
+            <div class="book-description-section">
+              <h3>Description</h3>
+              <p id="detail-description">No description provided.</p>
+            </div>
+
+            <!-- Seller Information Card -->
+            <div class="seller-card">
+              <h3>Seller Contact Information</h3>
+              <div class="seller-profile">
+                <div class="seller-avatar" id="detail-seller-avatar">S</div>
+                <div class="seller-info">
+                  <h4 id="detail-seller-name">Student Seller</h4>
+                  <p id="detail-seller-college" class="seller-college">College Campus</p>
+                  <span id="detail-seller-verified" class="badge badge-success hidden">✓ Verified Student</span>
+                </div>
+              </div>
+
+              <div class="seller-contact-actions">
+                <a id="btn-seller-email" href="mailto:" class="btn btn-primary btn-block">
+                  📧 Email Seller (<span id="detail-seller-email">seller@example.com</span>)
+                </a>
+                <a id="btn-seller-phone" href="tel:" class="btn btn-outline btn-block">
+                  📞 Call / WhatsApp (<span id="detail-seller-phone">Not Provided</span>)
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: CREATE BOOK LISTING -->
+    <section id="view-create-book" class="view-section">
+      <div class="form-card-container">
+        <div class="form-card">
+          <div class="form-header">
+            <h2>List a Book for Sale</h2>
+            <p>Fill out the details below. Once created and approved by our moderators, your book will appear publicly.</p>
+          </div>
+
+          <form id="create-book-form" onsubmit="handleCreateBook(event)">
+            <div class="form-group">
+              <label for="book-title">Book Title *</label>
+              <input type="text" id="book-title" class="form-control" placeholder="e.g. Introduction to Algorithms" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="book-author">Author(s)</label>
+                <input type="text" id="book-author" class="form-control" placeholder="e.g. Thomas H. Cormen">
+              </div>
+              <div class="form-group col">
+                <label for="book-category">Category *</label>
+                <select id="book-category" class="form-control" required>
+                  <option value="">Select Category</option>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="book-condition">Condition *</label>
+                <select id="book-condition" class="form-control" required>
+                  <option value="">Select Condition</option>
+                  <option value="NEW">New (Unopened/Unused)</option>
+                  <option value="LIKE_NEW">Like New (Mint Condition)</option>
+                  <option value="GOOD">Good (Lightly Used/Clean)</option>
+                  <option value="FAIR">Fair (Readable/Some Wear)</option>
+                </select>
+              </div>
+              <div class="form-group col">
+                <label for="book-price">Price (₹ / $) *</label>
+                <input type="number" id="book-price" class="form-control" placeholder="e.g. 450" min="0" step="1" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="book-edition">Edition</label>
+                <input type="text" id="book-edition" class="form-control" placeholder="e.g. 3rd Edition">
+              </div>
+              <div class="form-group col">
+                <label for="book-year">Publication Year</label>
+                <input type="number" id="book-year" class="form-control" placeholder="e.g. 2018" min="1900" max="2030">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="book-description">Description / Notes on Book</label>
+              <textarea id="book-description" class="form-control" rows="3" placeholder="Mention any highlights, annotations, CD/code inclusion, or pickup details..."></textarea>
+            </div>
+
+            <!-- Image Upload Component -->
+            <div class="form-group">
+              <label>Book Cover Photo *</label>
+              <div class="image-upload-dropzone" onclick="document.getElementById('book-image-file').click()">
+                <input type="file" id="book-image-file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleImageFileSelected(this)" required>
+                <div id="image-preview-wrapper" class="hidden">
+                  <img id="image-preview" src="" alt="Cover Preview" class="upload-preview-img">
+                  <p id="image-filename" class="text-muted mt-2"></p>
+                  <button type="button" class="btn btn-sm btn-outline mt-2" onclick="event.stopPropagation(); clearImageSelection()">Change Photo</button>
+                </div>
+                <div id="image-placeholder">
+                  <span class="upload-icon">📷</span>
+                  <p><strong>Click to choose cover photo</strong> (JPG, PNG, WebP up to 5MB)</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline" onclick="navigateTo('marketplace')">Cancel</button>
+              <button type="submit" id="btn-submit-book" class="btn btn-primary">Submit Book for Approval</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: MY BOOK LISTINGS -->
+    <section id="view-my-books" class="view-section">
+      <div class="section-header-bar">
+        <div>
+          <h2>My Book Listings</h2>
+          <p>Track your active sales, pending submissions, and review feedback.</p>
+        </div>
+        <button class="btn btn-primary" onclick="navigateTo('create-book')">+ List Another Book</button>
+      </div>
+
+      <div id="my-books-table-wrapper" class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Cover</th>
+              <th>Title & Author</th>
+              <th>Category</th>
+              <th>Condition</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="my-books-tbody">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+        
+        <div id="my-books-empty" class="empty-state hidden">
+          <div class="empty-icon">📦</div>
+          <h3>You haven't listed any books yet</h3>
+          <p>Start selling your unused textbooks to fellow college students.</p>
+          <button class="btn btn-primary mt-3" onclick="navigateTo('create-book')">Create First Listing</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: USER PROFILE & SETTINGS -->
+    <section id="view-profile" class="view-section">
+      <div class="form-card-container">
+        <div class="form-card">
+          <h2>Student Profile & Settings</h2>
+          <p class="text-muted">Keep your contact details updated so buyers can reach you easily.</p>
+
+          <form id="profile-form" onsubmit="handleUpdateProfile(event)" class="mt-4">
+            <div class="form-group">
+              <label for="profile-name">Full Name *</label>
+              <input type="text" id="profile-name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="profile-email">Email Address (Read Only)</label>
+              <input type="email" id="profile-email" class="form-control" disabled>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col">
+                <label for="profile-college">College / University Name</label>
+                <input type="text" id="profile-college" class="form-control" placeholder="e.g. CVR College of Engineering">
+              </div>
+              <div class="form-group col">
+                <label for="profile-college-id">Student ID / Roll No</label>
+                <input type="text" id="profile-college-id" class="form-control" placeholder="e.g. 21B81A0501">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="profile-phone">Phone Number (Visible to buyers)</label>
+              <input type="text" id="profile-phone" class="form-control" placeholder="e.g. +91 9876543210">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+          </form>
+
+          <div class="dropdown-divider my-4"></div>
+
+          <h3>Change Password</h3>
+          <form id="password-form" onsubmit="handleChangePassword(event)" class="mt-3">
+            <div class="form-group">
+              <label for="pwd-current">Current Password *</label>
+              <input type="password" id="pwd-current" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="pwd-new">New Password (min 6 chars) *</label>
+              <input type="password" id="pwd-new" class="form-control" minlength="6" required>
+            </div>
+            <button type="submit" class="btn btn-outline">Update Password</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: LOGIN -->
+    <section id="view-login" class="view-section">
+      <div class="auth-card-container">
+        <div class="auth-card">
+          <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p>Log in to access your marketplace account and manage listings.</p>
+          </div>
+
+          <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label for="login-email">Email Address</label>
+              <input type="email" id="login-email" class="form-control" placeholder="student@example.com" required>
+            </div>
+
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block btn-lg">Log In</button>
+          </form>
+
+          <div class="auth-footer">
+            <p>Don't have an account yet? <a href="javascript:void(0)" onclick="navigateTo('register')">Sign up here</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: REGISTER -->
+    <section id="view-register" class="view-section">
+      <div class="auth-card-container">
+        <div class="auth-card">
+          <div class="auth-header">
+            <h2>Create Student Account</h2>
+            <p>Join fellow students to buy, sell, and exchange course books.</p>
+          </div>
+
+          <form id="register-form" onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label for="reg-name">Full Name *</label>
+              <input type="text" id="reg-name" class="form-control" placeholder="e.g. John Doe" required>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-email">College Email Address *</label>
+              <input type="email" id="reg-email" class="form-control" placeholder="e.g. john@college.edu" required>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-password">Password *</label>
+              <input type="password" id="reg-password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+            </div>
+
+            <button type="submit" id="btn-reg-submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+          </form>
+
+          <div class="auth-footer">
+            <p>Already have an account? <a href="javascript:void(0)" onclick="navigateTo('login')">Log in</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: ADMIN DASHBOARD -->
+    <section id="view-admin" class="view-section">
+      <div class="admin-header">
+        <div>
+          <h2>Admin Control Center</h2>
+          <p>Review textbook submissions, moderate users, and manage categories.</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="loadAdminData()">🔄 Refresh Data</button>
+      </div>
+
+      <!-- Stats Overview Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue">👥</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-total-users">0</span>
+            <span class="stat-label">Total Users</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-purple">📚</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-total-books">0</span>
+            <span class="stat-label">Total Books</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-amber">⏳</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-pending-books">0</span>
+            <span class="stat-label">Pending Approval</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-green">✅</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-approved-books">0</span>
+            <span class="stat-label">Approved Books</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Tabs Navigation -->
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="switchAdminTab('pending')">Pending Approvals (<span id="tab-pending-count">0</span>)</button>
+        <button class="tab-btn" onclick="switchAdminTab('all-books')">All Books Catalog</button>
+        <button class="tab-btn" onclick="switchAdminTab('users')">User Management</button>
+        <button class="tab-btn" onclick="switchAdminTab('categories')">Categories</button>
+      </div>
+
+      <!-- Admin Tab: Pending Approvals -->
+      <div id="admin-tab-pending" class="admin-tab-content active">
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Cover</th>
+                <th>Book Details</th>
+                <th>Seller</th>
+                <th>Price & Condition</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-pending-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+          <div id="admin-pending-empty" class="empty-state hidden">
+            <div class="empty-icon">🎉</div>
+            <h3>No pending approvals</h3>
+            <p>All book listings have been reviewed.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Tab: All Books -->
+      <div id="admin-tab-all-books" class="admin-tab-content">
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Cover</th>
+                <th>Title & Author</th>
+                <th>Seller</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-all-books-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Admin Tab: Users -->
+      <div id="admin-tab-users" class="admin-tab-content">
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Name & Email</th>
+                <th>Role</th>
+                <th>Total Books</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Admin Tab: Categories -->
+      <div id="admin-tab-categories" class="admin-tab-content">
+        <div class="admin-category-grid">
+          <div class="card p-4">
+            <h3>Add New Category</h3>
+            <form id="add-category-form" onsubmit="handleCreateCategory(event)" class="mt-3">
+              <div class="form-group">
+                <label for="new-cat-name">Category Name *</label>
+                <input type="text" id="new-cat-name" class="form-control" placeholder="e.g. Law & Legal Studies" required>
+              </div>
+              <div class="form-group">
+                <label for="new-cat-desc">Description</label>
+                <input type="text" id="new-cat-desc" class="form-control" placeholder="Brief description of books in this category">
+              </div>
+              <button type="submit" class="btn btn-primary">Add Category</button>
+            </form>
+          </div>
+
+          <div class="card p-4">
+            <h3>Existing Categories</h3>
+            <ul id="admin-categories-list" class="category-list mt-3">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- REJECTION REASON MODAL -->
+  <div id="reject-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Reject Book Listing</h3>
+        <button class="modal-close" onclick="closeRejectModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Provide feedback to the student seller explaining why the book was not approved:</p>
+        <textarea id="reject-note-input" class="form-control mt-2" rows="3" placeholder="e.g. Cover image is blurry. Please upload a clear photo of the textbook."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeRejectModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmRejectBook()">Confirm Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
