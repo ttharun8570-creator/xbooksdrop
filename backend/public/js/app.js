@@ -514,13 +514,26 @@ async function loadBookDetails(bookId) {
       emailBtn.classList.add('hidden');
     }
 
+    const whatsappBtn = document.getElementById('btn-seller-whatsapp');
+    const whatsappSpan = document.getElementById('detail-seller-whatsapp-phone');
     const phoneBtn = document.getElementById('btn-seller-phone');
     const phoneSpan = document.getElementById('detail-seller-phone');
     if (seller.phone) {
+      let rawDigits = seller.phone.replace(/[^0-9]/g, '');
+      let waPhone = rawDigits.length === 10 ? `91${rawDigits}` : rawDigits;
+      let msg = encodeURIComponent(`Hi ${seller.name || 'there'}, I found your book "${book.title}" on BookNest (₹${book.price}) and would like to buy it!`);
+      
+      if (whatsappBtn && whatsappSpan) {
+        whatsappSpan.textContent = seller.phone;
+        whatsappBtn.href = `https://wa.me/${waPhone}?text=${msg}`;
+        whatsappBtn.classList.remove('hidden');
+      }
+
       phoneSpan.textContent = seller.phone;
       phoneBtn.href = `tel:${seller.phone}`;
       phoneBtn.classList.remove('hidden');
     } else {
+      if (whatsappBtn) whatsappBtn.classList.add('hidden');
       phoneBtn.classList.add('hidden');
     }
 

@@ -453,34 +453,54 @@ const BookDetail = () => {
 
             {/* Direct Contact Actions */}
             {isAuthenticated ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {book.seller?.email && (
+              <div className="space-y-2.5 pt-2">
+                {book.seller?.phone && (
                   <a
-                    href={`mailto:${book.seller.email}?subject=Interested in purchasing: ${encodeURIComponent(book.title)}`}
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all"
+                    href={`https://wa.me/${(book.seller.phone.replace(/[^0-9]/g, '').length === 10 ? '91' : '') + book.seller.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                      `Hi ${book.seller?.name || 'there'}, I found your book "${book.title}" on BookNest (₹${book.price}) and would like to buy it! Is it still available?`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform hover:-translate-y-0.5"
                   >
-                    <Mail className="w-4 h-4" />
-                    <span>Email Seller ({book.seller.email})</span>
+                    <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.301-.15-1.78-.879-2.056-.98-.276-.1-.477-.15-.678.15-.2.3-.778.98-.954 1.18-.175.2-.351.226-.652.075-.3-.15-1.266-.467-2.41-1.488-.89-.795-1.49-1.777-1.666-2.078-.175-.3-.019-.462.132-.612.136-.135.301-.35.451-.526.15-.175.2-.3.301-.5.1-.2.05-.375-.025-.525-.075-.15-.677-1.633-.928-2.238-.245-.589-.494-.509-.678-.519l-.578-.01c-.2 0-.526.075-.802.375-.276.3-1.053 1.03-1.053 2.511 0 1.481 1.078 2.91 1.229 3.111.15.2 2.122 3.24 5.14 4.544.718.31 1.279.496 1.716.634.721.23 1.377.197 1.896.12.578-.087 1.78-.727 2.03-1.43.25-.703.25-1.306.175-1.43-.075-.125-.276-.2-.577-.35zM12.04 2C6.517 2 2.03 6.488 2.03 12.012c0 1.764.46 3.489 1.334 5.01L2 22l5.12-1.343c1.472.802 3.13 1.225 4.92 1.225 5.522 0 10.01-4.488 10.01-10.012C22.05 6.488 17.562 2 12.04 2z"/>
+                    </svg>
+                    <span>Chat on WhatsApp ({book.seller.phone})</span>
                   </a>
                 )}
-                {book.seller?.phone ? (
-                  <a
-                    href={`tel:${book.seller.phone}`}
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md transition-all"
-                  >
-                    <Phone className="w-4 h-4" />
-                    <span>Call / SMS ({book.seller.phone})</span>
-                  </a>
-                ) : (
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {book.seller?.phone && (
+                    <a
+                      href={`tel:${book.seller.phone}`}
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all"
+                    >
+                      <Phone className="w-4 h-4" />
+                      <span>Call Seller</span>
+                    </a>
+                  )}
+                  {book.seller?.email && (
+                    <a
+                      href={`mailto:${book.seller.email}?subject=Interested in purchasing: ${encodeURIComponent(book.title)}`}
+                      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-all"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>Email Seller</span>
+                    </a>
+                  )}
+                </div>
+
+                {!book.seller?.phone && !book.seller?.email && (
                   <div className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-slate-100 text-slate-500 text-xs font-medium">
-                    <span>Phone not provided</span>
+                    <span>Contact details not provided</span>
                   </div>
                 )}
               </div>
             ) : (
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center space-y-2">
                 <p className="text-xs font-semibold text-slate-600">
-                  Sign in to view full contact numbers and connect directly with the seller.
+                  Sign in to chat on WhatsApp or call the student seller directly.
                 </p>
                 <Link
                   to="/login"
