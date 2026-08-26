@@ -1,10 +1,10 @@
 /**
- * Format numerical price to localized currency string (USD or INR as appropriate)
+ * Format numerical price to localized currency string (Indian Rupee ₹)
  */
-export const formatPrice = (price, currency = '$') => {
+export const formatPrice = (price, currency = '₹') => {
   const num = Number(price);
   if (isNaN(num)) return `${currency}0.00`;
-  return `${currency}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${currency}${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 /**

@@ -4,7 +4,7 @@ import {
   BookOpen,
   Save,
   ArrowLeft,
-  DollarSign,
+  IndianRupee,
   AlertTriangle,
   AlertCircle,
 } from 'lucide-react';
@@ -242,23 +242,24 @@ const EditBook = () => {
 
           <div className="space-y-4 pt-4 border-t border-slate-100">
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-emerald-600" />
+              <IndianRupee className="w-4 h-4 text-emerald-600" />
               <span>Pricing & Condition</span>
             </h3>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Selling Price ($) <span className="text-rose-500">*</span>
+                Selling Price (₹) <span className="text-rose-500">*</span>
               </label>
               <div className="relative max-w-xs">
-                <span className="text-slate-400 font-bold absolute left-3.5 top-1/2 -translate-y-1/2">$</span>
+                <span className="text-slate-400 font-bold absolute left-3.5 top-1/2 -translate-y-1/2">₹</span>
                 <input
                   type="number"
-                  step="0.01"
+                  step="1"
                   min="0"
                   required
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
+                  placeholder="350"
                   className="w-full pl-8 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                 />
               </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, RotateCcw, Filter, Tag, DollarSign, Layers } from 'lucide-react';
+import { Search, RotateCcw, Filter, Tag, IndianRupee, Layers } from 'lucide-react';
 
 const CONDITIONS = [
   { value: 'NEW', label: 'Brand New' },
@@ -111,12 +111,12 @@ const FilterSidebar = ({
       {/* Price Range Filter */}
       <div>
         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+          <IndianRupee className="w-3.5 h-3.5 text-slate-400" />
           Price Range
         </label>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <span className="text-[10px] font-semibold text-slate-400 block mb-1">Min ($)</span>
+            <span className="text-[10px] font-semibold text-slate-400 block mb-1">Min (₹)</span>
             <input
               type="number"
               min="0"
@@ -127,11 +127,11 @@ const FilterSidebar = ({
             />
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-slate-400 block mb-1">Max ($)</span>
+            <span className="text-[10px] font-semibold text-slate-400 block mb-1">Max (₹)</span>
             <input
               type="number"
               min="0"
-              placeholder="1000"
+              placeholder="2000"
               value={filters.max_price || ''}
               onChange={(e) => onFilterChange('max_price', e.target.value)}
               className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"

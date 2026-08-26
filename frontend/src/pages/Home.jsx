@@ -144,7 +144,7 @@ const Home = () => {
             <p className="text-xs font-semibold text-slate-500 mt-1">Peer Verified Listings</p>
           </div>
           <div className="text-center p-2 border-l border-slate-100">
-            <p className="text-2xl sm:text-3xl font-black text-indigo-600">$0</p>
+            <p className="text-2xl sm:text-3xl font-black text-indigo-600">₹0</p>
             <p className="text-xs font-semibold text-slate-500 mt-1">Zero Middleman Fees</p>
           </div>
           <div className="text-center p-2 border-l border-slate-100">
