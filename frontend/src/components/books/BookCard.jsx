@@ -18,6 +18,7 @@ const BookCard = ({
     price,
     condition,
     category_name,
+    image_link,
     image_url,
     edition,
     publication_year,
